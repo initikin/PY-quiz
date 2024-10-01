@@ -1,19 +1,21 @@
 from itertools import chain
 
+
 class Mentor:
     def __init__(self, name, surname):
         self.name = name
         self.surname = surname
         self.courses_attached = []
 
+
 class Lecture(Mentor):
+
     def __init__(self, name, surname, rates = 0):
         super().__init__(name, surname)
         self.rates = {}
 
     def __str__(self):
         return (f"Имя: {self.name} \nФамилия {self.surname} \nСредняя оценка за лекции {sum(self.rates.values())/len(self.rates)}")
-        #return f"Имя: {self.name} \nФамилия: {self.surname} \nСредняя оценка за лекции: {sum(self.rates.values())}"
 
     def __eq__(self, other):
         if isinstance(other, Lecture):
@@ -41,6 +43,7 @@ class Lecture(Mentor):
         return NotImplemented
 
 class Reviewer(Mentor):
+
     def __init__(self, name, surname):
         super().__init__(name, surname)
 
@@ -55,7 +58,9 @@ class Reviewer(Mentor):
     def __str__(self):
         return f"Имя: {self.name}\nФамилия: {self.surname}"
 
+
 class Student:
+
     def __init__(self, name, surname, gender):
         self.name = name
         self.surname = surname
@@ -93,8 +98,8 @@ class Student:
             all_grades = list(chain.from_iterable(self.grades.values()))
             average_rate = sum(all_grades) / len(self.grades)
             other_all_grades = list(chain.from_iterable(other.grades.values()))
-            other_average_rate = sum(all_grades) / len(other.grades)
-            return all_grades == other_all_grades
+            other_average_rate = sum(other_all_grades) / len(other.grades)
+            return average_rate == other_average_rate
         return False
 
     def __lt__(self, other):
@@ -102,8 +107,8 @@ class Student:
             all_grades = list(chain.from_iterable(self.grades.values()))
             average_rate = sum(all_grades) / len(self.grades)
             other_all_grades = list(chain.from_iterable(other.grades.values()))
-            other_average_rate = sum(all_grades) / len(other.grades)
-            return all_grades < other_all_grades
+            other_average_rate = sum(other_all_grades) / len(other.grades)
+            return average_rate < other_average_rate
         return NotImplemented
 
     def __le__(self, other):
@@ -111,8 +116,8 @@ class Student:
             all_grades = list(chain.from_iterable(self.grades.values()))
             average_rate = sum(all_grades) / len(self.grades)
             other_all_grades = list(chain.from_iterable(other.grades.values()))
-            other_average_rate = sum(all_grades) / len(other.grades)
-            return all_grades <= other_all_grades
+            other_average_rate = sum(other_all_grades) / len(other.grades)
+            return average_rate <= other_average_rate
         return NotImplemented
 
     def __gt__(self, other):
@@ -120,8 +125,8 @@ class Student:
             all_grades = list(chain.from_iterable(self.grades.values()))
             average_rate = sum(all_grades) / len(self.grades)
             other_all_grades = list(chain.from_iterable(other.grades.values()))
-            other_average_rate = sum(all_grades) / len(other.grades)
-            return all_grades > other_all_grades
+            other_average_rate = sum(other_all_grades) / len(other.grades)
+            return average_rate > other_average_rate
         return NotImplemented
 
     def __ge__(self, other):
@@ -129,11 +134,32 @@ class Student:
             all_grades = list(chain.from_iterable(self.grades.values()))
             average_rate = sum(all_grades) / len(self.grades)
             other_all_grades = list(chain.from_iterable(other.grades.values()))
-            other_average_rate = sum(all_grades) / len(other.grades)
-            return all_grades >= other_all_grades
+            other_average_rate = sum(other_all_grades) / len(other.grades)
+            return average_rate >= other_average_rate
         return NotImplemented
 
 
+def compare_student (students, course):
+    total_average = 0
+    i = 0
+    if isinstance(students, list):
+        for e in students:
+            if isinstance(e, Student):
+                total_average += sum(e.grades[course])
+                i += 1
+    return total_average / i
+
+def compare_lectors(lectors, course):
+    total_average = 0
+    i = 0
+    if isinstance(lectors, list):
+        for e in lectors:
+            if isinstance(e, Lecture):
+                if course in e.rates:
+                    #print(e.rates[course])
+                    total_average += e.rates[course]
+                    i += 1
+    return total_average / i
 
 delimiter = "******************************************"
 student1 = Student('Ivan', 'Nikitin', 'male')
@@ -159,13 +185,13 @@ reviewer2.courses_attached += ['HTML']
 reviewer2.courses_attached += ['Python']
 reviewer2.courses_attached += ['Linux']
 student1.rate_lecture(lecture1, 'Python', 10)
-student2.rate_lecture(lecture1, 'Python', 3)
-student1.rate_lecture(lecture2, 'Python', 10)
+student2.rate_lecture(lecture1, 'Python', 7)
+student1.rate_lecture(lecture2, 'Python', 9)
 student2.rate_lecture(lecture2, 'Linux', 3)
 student2.rate_lecture(lecture2, 'FreeBSD', 8)
-reviewer1.rate_hw(student1, 'Python', 7)
+reviewer1.rate_hw(student1, 'Python', 10)
 reviewer2.rate_hw(student1, 'HTML', 8)
-reviewer1.rate_hw(student2, 'Python', 9)
+reviewer1.rate_hw(student2, 'Python', 5)
 reviewer2.rate_hw(student2, 'Linux', 6)
 # print(lecture1.rates)
 # print(lecture2.rates)
@@ -178,8 +204,16 @@ reviewer2.rate_hw(student2, 'Linux', 6)
 # print(delimiter)
 # print(student1)
 # print(student2)
-print (lecture2 < lecture1)
-print (lecture2 > lecture1)
-print(student1 == student2)
-print(student1 > student2)
-print(student1 < student2)
+list_of_students = []
+list_of_lectors = []
+# print (lecture2 < lecture1)
+# print (lecture2 > lecture1)
+# print(student1 == student2)
+# print(student1 > student2)
+# print(student1 < student2)
+list_of_students.append(student1)
+list_of_students.append(student2)
+print(compare_student(list_of_students, 'Python'))
+list_of_lectors.append(lecture1)
+list_of_lectors.append(lecture2)
+print(compare_lectors(list_of_lectors, 'Python'))
